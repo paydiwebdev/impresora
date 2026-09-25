@@ -1,0 +1,199 @@
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Etiquetas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- PANTALLA 1: Nº DE ORDEN -->
+    <section id="pantallaEntrada" class="pantalla activa">
+        <div class="contenedor">
+            <h1>Nº DE ORDEN</h1>
+
+            <input
+                id="numeroOrden"
+                class="campo-principal"
+                type="number"
+                inputmode="numeric"
+                step="1"
+                autocomplete="off"
+                placeholder="Introduzca nº de orden"
+            >
+
+            <label class="checkbox-exacta">
+                <input type="checkbox" id="ordenExacta" checked>
+                <span>EXACTA</span>
+            </label>
+
+            <div id="bloqueUnidadesTotales" class="campo-condicional oculto">
+                <label for="unidadesTotales">Nº UNIDADES TOTALES</label>
+                <input
+                    id="unidadesTotales"
+                    type="number"
+                    min="1"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="Unidades totales"
+                >
+            </div>
+            <!-- teclado virtual sin implementar bien -->
+            <!-- <div class="teclado">
+                <button type="button" data-numero="1">1</button>
+                <button type="button" data-numero="2">2</button>
+                <button type="button" data-numero="3">3</button>
+                <button type="button" data-numero="4">4</button>
+                <button type="button" data-numero="5">5</button>
+                <button type="button" data-numero="6">6</button>
+                <button type="button" data-numero="7">7</button>
+                <button type="button" data-numero="8">8</button>
+                <button type="button" data-numero="9">9</button>
+                <button type="button" id="borrar">CLR</button>
+                <button type="button" data-numero="0">0</button>
+                <button type="button" id="retroceder">←</button>
+            </div> -->
+
+            <button type="button" id="consultarOrden" class="boton-principal">
+                ACEPTAR
+            </button>
+        </div>
+    </section>
+
+    <!-- CARGANDO -->
+    <section id="pantallaCargando" class="pantalla">
+        <div class="contenedor centrado">
+            <div class="cargando"></div>
+            <p>Consultando orden...</p>
+        </div>
+    </section>
+
+    <!-- PANTALLA 2: UNIDADES POR CAJA -->
+    <section id="pantallaConfiguracion" class="pantalla">
+        <div class="contenedor">
+            <h1>UNIDADES POR CAJA</h1>
+
+            <div id="resumenOrden" class="resumen"></div>
+
+            <label for="unidadesPorCaja">Nº UNIDADES POR CAJA</label>
+            <input
+                id="unidadesPorCaja"
+                class="campo-grande"
+                type="number"
+                min="1"
+                step="1"
+                inputmode="numeric"
+                placeholder="Ej. 100"
+            >
+
+            <div id="previsualizacionCalculo" class="calculo"></div>
+
+            <button type="button" id="generarEtiqueta" class="boton-principal">
+                GENERAR ETIQUETAS
+            </button>
+
+            <button type="button" id="volverEntrada" class="boton-secundario">
+                ← VOLVER
+            </button>
+        </div>
+    </section>
+
+    <!-- PANTALLA 3: IMPRESIÓN -->
+    <section id="pantallaEtiqueta" class="pantalla">
+        <div class="barra-superior">
+            <div>
+                <h1>ETIQUETAS</h1>
+                <p id="informacionCajas"></p>
+            </div>
+            <div class="acciones">
+                <button type="button" id="editarEtiquetas" class="boton-secundario">
+                    EDITAR
+                </button>
+                <button type="button" id="imprimirEtiquetas" class="boton-principal">
+                    IMPRIMIR
+                </button>
+            </div>
+        </div>
+
+        <div id="contenedorEtiqueta"></div>
+
+        <button type="button" id="nuevaOrden" class="boton-secundario boton-nueva">
+            NUEVA ORDEN
+        </button>
+    </section>
+
+    <!-- PANTALLA 4: EDICIÓN COMPLETA -->
+    <section id="pantallaEdicion" class="pantalla">
+        <div class="contenedor edicion-contenedor">
+            <h1>EDICIÓN COMPLETA</h1>
+
+            <div class="grid-edicion">
+                <div class="campo-edicion">
+                    <label for="editarOrden">Nº ORDEN</label>
+                    <input id="editarOrden" type="text">
+                </div>
+
+                <div class="campo-edicion">
+                    <label for="editarCliente">CLIENTE</label>
+                    <input id="editarCliente" type="text">
+                </div>
+
+                <div class="campo-edicion">
+                    <label for="editarPublicidad">PUBLICIDAD</label>
+                    <input id="editarPublicidad" type="text">
+                </div>
+
+                <div class="campo-edicion">
+                    <label for="editarTotal">TOTAL UNIDADES</label>
+                    <input id="editarTotal" type="number" min="0" step="1">
+                </div>
+
+                <div class="campo-edicion">
+                    <label for="editarNumeroCajas">Nº CAJAS</label>
+                    <input id="editarNumeroCajas" type="number" min="1" step="1">
+                </div>
+
+                <div class="campo-edicion">
+                    <label for="editarUnidadesCaja">UNIDADES POR CAJA</label>
+                    <input id="editarUnidadesCaja" type="number" min="1" step="1">
+                </div>
+            </div>
+
+            <h2>UNIDADES DE CADA CAJA</h2>
+            <p class="ayuda">
+                Puedes cambiar manualmente las unidades de cualquier caja.
+                El total se actualizará con los valores introducidos.
+            </p>
+
+            <div id="listaCajasEdicion" class="lista-cajas"></div>
+
+            <div class="resumen-edicion">
+                <strong>Total calculado:</strong>
+                <span id="totalEditado">0</span>
+            </div>
+
+            <div class="acciones-edicion">
+                <button type="button" id="guardarEdicion" class="boton-principal">
+                    GUARDAR CAMBIOS
+                </button>
+                <button type="button" id="cancelarEdicion" class="boton-secundario">
+                    CANCELAR
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ERROR -->
+    <section id="pantallaError" class="pantalla">
+        <div class="contenedor centrado">
+            <h1>ERROR</h1>
+            <p id="mensajeError"></p>
+            <button type="button" id="volverError" class="boton-principal">
+                VOLVER
+            </button>
+        </div>
+    </section>
+
+    <script src="app.js"></script>
+</body>
+</html>
