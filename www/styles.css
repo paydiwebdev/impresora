@@ -1,0 +1,616 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f2f2f2;
+    color: #111;
+}
+
+body {
+    min-height: 100vh;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.pantalla {
+    display: none;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.pantalla.activa {
+    display: block;
+}
+
+.contenedor {
+    width: min(700px, 100%);
+    margin: 0 auto;
+}
+
+.centrado {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    text-align: center;
+}
+
+h1 {
+    margin: 0 0 25px;
+    text-align: center;
+    font-size: clamp(28px, 5vw, 44px);
+}
+
+h2 {
+    margin: 30px 0 12px;
+    font-size: 24px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* CAMPOS */
+
+.campo-principal,
+.campo-grande,
+.campo-condicional input,
+.campo-edicion input {
+    width: 100%;
+    border: 2px solid #222;
+    border-radius: 8px;
+    background: white;
+    color: #111;
+}
+
+.campo-principal {
+    height: 70px;
+    padding: 10px 16px;
+    margin-bottom: 18px;
+    text-align: center;
+    font-size: 34px;
+    letter-spacing: 2px;
+}
+
+.campo-grande {
+    height: 80px;
+    padding: 10px 16px;
+    font-size: 38px;
+    text-align: center;
+}
+
+.campo-condicional {
+    margin: 15px 0 20px;
+}
+
+.campo-condicional input {
+    height: 58px;
+    padding: 10px 15px;
+    font-size: 26px;
+    text-align: center;
+}
+
+.oculto {
+    display: none !important;
+}
+
+.checkbox-exacta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 10px 0 20px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.checkbox-exacta input {
+    width: 26px;
+    height: 26px;
+    accent-color: #111;
+}
+
+/* TECLADO */
+
+.teclado {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px auto;
+    max-width: 430px;
+}
+
+.teclado button {
+    min-height: 70px;
+    border: 1px solid #777;
+    border-radius: 10px;
+    background: white;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.teclado button:active {
+    background: #ddd;
+}
+
+/* BOTONES */
+
+.boton-principal,
+.boton-secundario {
+    width: 100%;
+    min-height: 58px;
+    border-radius: 9px;
+    padding: 12px 20px;
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.boton-principal {
+    border: 2px solid #111;
+    background: #111;
+    color: white;
+}
+
+.boton-principal:active {
+    background: #333;
+}
+
+.boton-secundario {
+    margin-top: 12px;
+    border: 2px solid #333;
+    background: white;
+    color: #111;
+}
+
+.boton-secundario:active {
+    background: #ddd;
+}
+
+.boton-nueva {
+    width: min(700px, 100%);
+    display: block;
+    margin: 25px auto;
+}
+
+/* RESUMEN */
+
+.resumen {
+    padding: 16px;
+    margin-bottom: 25px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    background: white;
+    line-height: 1.6;
+    font-size: 18px;
+}
+
+.calculo {
+    min-height: 50px;
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid #bbb;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* CARGANDO */
+
+.cargando {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #ccc;
+    border-top-color: #111;
+    border-radius: 50%;
+    animation: girar 0.8s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes girar {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* PANTALLA ETIQUETAS */
+
+#pantallaEtiqueta {
+    background: #ddd;
+}
+
+.barra-superior {
+    width: min(1100px, 100%);
+    margin: 0 auto 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.barra-superior h1 {
+    text-align: left;
+    margin: 0;
+}
+
+.barra-superior p {
+    margin: 5px 0 0;
+    font-size: 18px;
+}
+
+.acciones {
+    display: flex;
+    gap: 10px;
+    min-width: 260px;
+}
+
+.acciones button {
+    width: auto;
+    min-width: 120px;
+}
+
+#contenedorEtiqueta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+/* ETIQUETA 10 X 5 CM */
+
+/* .etiqueta-carnet {
+    width: 10cm;
+    height: 5cm;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    background: white;
+    border: 1px solid #000;
+    padding: 0.25cm;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    overflow: hidden;
+}
+
+.etiqueta-titulo {
+    text-align: left;
+    font-size: 12pt;
+    font-weight: bold;
+    margin-bottom: 0.1cm;
+}
+
+.etiqueta-cliente {
+    text-align: left;
+    font-size: 12pt;
+    font-weight: bold;
+    margin-bottom: 0.05cm;
+}
+
+.etiqueta-publicidad {
+    text-align: left;
+    font-size: 12pt;
+    margin-bottom: 0.05cm;
+}
+
+.etiqueta-datos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.08cm 0.25cm;
+    flex: 1;
+}
+
+.fila-etiqueta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #aaa;
+    font-size: 8.5pt;
+    gap: 5px;
+}
+
+.fila-etiqueta strong {
+    font-size: 8pt;
+}
+
+.fila-etiqueta span {
+    text-align: right;
+    font-weight: bold;
+}
+
+.etiqueta-caja {
+    margin-top: 0.12cm;
+    padding-top: 0.08cm;
+    border-top: 2px solid #000;
+    text-align: center;
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+.etiqueta-unidades {
+    text-align: center;
+    font-size: 15pt;
+    font-weight: bold;
+    margin-top: 0.05cm;
+} */
+.etiqueta-carnet {
+    width: 10cm;
+    height: 5cm;
+
+    flex: 0 0 auto;
+
+    box-sizing: border-box;
+
+    background: white;
+
+    border: 1px solid #000;
+
+    padding: 0.3cm;
+
+    display: flex;
+
+    flex-direction: column;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    color: #000;
+}
+
+
+/* ==============================
+   TÍTULO ETIQUETA
+   ============================== */
+
+.etiqueta-titulo {
+    font-size: 16px;
+
+
+    text-align: left;
+
+    border-bottom: 1px solid #000;
+
+    padding-bottom: 4px;
+
+    margin-bottom: 5px;
+}
+
+
+/* ==============================
+   FILAS
+   ============================== */
+
+.etiqueta-fila {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-size: 10px;
+
+    line-height: 1.2;
+
+    margin-bottom: 3px;
+}
+
+.etiqueta-label {
+
+    white-space: nowrap;
+}
+
+.etiqueta-valor {
+    text-align: right;
+
+    font-weight: normal;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ==============================
+   CAJA
+   ============================== */
+
+.etiqueta-caja {
+    margin-top: auto;
+
+    padding: 5px;
+
+    border: 2px solid #000;
+
+    text-align: center;
+
+    font-size: 17px;
+
+    font-weight: bold;
+}
+
+/* EDICIÓN */
+
+.edicion-contenedor {
+    max-width: 1000px;
+}
+
+.grid-edicion {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #bbb;
+}
+
+.campo-edicion input {
+    height: 52px;
+    padding: 8px 12px;
+    font-size: 20px;
+}
+
+.ayuda {
+    margin: 0 0 15px;
+    color: #555;
+}
+
+.lista-cajas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.caja-edicion {
+    background: white;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.caja-edicion label {
+    font-size: 16px;
+}
+
+.caja-edicion input {
+    width: 100%;
+    height: 48px;
+    padding: 8px;
+    border: 2px solid #333;
+    border-radius: 7px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.resumen-edicion {
+    margin-top: 18px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+    text-align: center;
+    font-size: 22px;
+}
+
+.acciones-edicion {
+    margin-top: 20px;
+}
+
+/* ERROR */
+
+#pantallaError h1 {
+    color: #a00;
+}
+
+#mensajeError {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+/* IMPRESIÓN */
+
+@page {
+    size: 10cm 5cm;
+    margin: 0;
+}
+
+@media print {
+    html,
+    body {
+        width: 10cm;
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    body {
+        min-height: auto;
+    }
+
+    .pantalla {
+        display: none !important;
+        min-height: 0;
+        padding: 0;
+    }
+
+    #pantallaEtiqueta {
+        display: block !important;
+        background: white;
+    }
+
+    #pantallaEtiqueta .barra-superior,
+    #pantallaEtiqueta .boton-nueva {
+        display: none !important;
+    }
+
+    #contenedorEtiqueta {
+        display: block;
+        margin: 0;
+    }
+
+    .etiqueta-carnet {
+        width: 10cm;
+        height: 5cm;
+        margin: 0;
+        border: 1px solid #000;
+        page-break-after: always;
+        break-after: page;
+    }
+
+    .etiqueta-carnet:last-child {
+        page-break-after: auto;
+        break-after: auto;
+    }
+}
+
+/* TABLET / MÓVIL */
+
+@media (max-width: 700px) {
+    .pantalla {
+        padding: 12px;
+    }
+
+    .barra-superior {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .barra-superior h1 {
+        text-align: center;
+    }
+
+    .acciones {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .acciones button {
+        flex: 1;
+    }
+
+    .grid-edicion {
+        grid-template-columns: 1fr;
+    }
+
+    .teclado button {
+        min-height: 62px;
+    }
+}
