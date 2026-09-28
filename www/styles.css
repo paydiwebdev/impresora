@@ -532,10 +532,11 @@ label {
     margin: 0;
 }
 
+
 @media print {
     html,
     body {
-        width: 10cm;
+        width: 100%;
         margin: 0;
         padding: 0;
         background: white;
@@ -554,6 +555,7 @@ label {
     #pantallaEtiqueta {
         display: block !important;
         background: white;
+        padding: 0;
     }
 
     #pantallaEtiqueta .barra-superior,
@@ -564,13 +566,15 @@ label {
     #contenedorEtiqueta {
         display: block;
         margin: 0;
+        gap: 0;
     }
 
     .etiqueta-carnet {
-        width: 10cm;
-        height: 5cm;
+        width: 100%;          /* fills the paper width, whatever the paper is */
+        height: 4.95cm;       /* 5 cm minus a hair so it never spills onto a 2nd sheet */
         margin: 0;
-        border: 1px solid #000;
+        border: none;         /* no outer line */
+        overflow: hidden;
         page-break-after: always;
         break-after: page;
     }

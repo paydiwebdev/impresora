@@ -622,11 +622,22 @@ document.getElementById("cancelarEdicion")
 // ============================================================
 
 document.getElementById("imprimirEtiquetas")
-    .addEventListener("click", () => {
-        window.print();
+    .addEventListener("click", async () => {
+        const dentroDeLaApp = window.Capacitor &&
+            typeof Capacitor.isNativePlatform === "function" &&
+            Capacitor.isNativePlatform();
+
+        if (dentroDeLaApp) {
+            try {
+                const EtiquetaPrinter = Capacitor.registerPlugin("EtiquetaPrinter");
+                await EtiquetaPrinter.print(); // papel 100 x 50 mm
+            } catch (err) {
+                alert("No se pudo abrir la impresión: " + (err.message || err));
+            }
+        } else {
+            window.print(); // PC / navegador
+        }
     });
-
-
 // ============================================================
 // VOLVER / NUEVA ORDEN
 // ============================================================
