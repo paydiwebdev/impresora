@@ -2,29 +2,44 @@
 // DATOS SIMULADOS
 // Sustituir consultarAPI() por el GET real cuando conectemos la API.
 // ============================================================
+let basedeDatos = { tickets: [] };
+document.getElementById('fileInput').addEventListener('change', (e) => {
+    loadTicketData(
+      e.target.files[0],
+      (tickets) => {
+        basedeDatos = { tickets }; // reassigning the outer variable, not creating a new one
+        console.log(basedeDatos.tickets[0]); // sanity check
+        renderTickets(); // now call whatever comes next, using the updated data
+      },
+      (err) => alert('Error leyendo el archivo: ' + err.message)
+    );
+  });
+  function renderTickets() {
+    // this function (and any other function in app.js) can now read basedeDatos
+    console.log(basedeDatos.tickets.length + ' tickets cargados');
+  }
+// const basedeDatos = {
+//     "1001": {
+//         codigo: "1001",
+//         cliente: "CLIENTE A",
+//         publicidad: "CAMPAÑA VERANO",
+//         cantidad: 1200
+//     },
 
-const baseDatosSimulada = {
-    "1001": {
-        ordenFabricacion: "1001",
-        nombreCliente: "CLIENTE A",
-        publicidad: "CAMPAÑA VERANO",
-        totalUnidades: 1200
-    },
+//     "1002": {
+//         codigo: "1002",
+//         cliente: "CLIENTE B",
+//         publicidad: "PROMOCIÓN ESPECIAL",
+//         cantidad: 500
+//     },
 
-    "1002": {
-        ordenFabricacion: "1002",
-        nombreCliente: "CLIENTE B",
-        publicidad: "PROMOCIÓN ESPECIAL",
-        totalUnidades: 500
-    },
-
-    "123456": {
-        ordenFabricacion: "123456",
-        nombreCliente: "CLIENTE DEMO",
-        publicidad: "PUBLICIDAD DEMO",
-        totalUnidades: 1250
-    }
-};
+//     "123456": {
+//         codigo: "123456",
+//         cliente: "CLIENTE DEMO",
+//         publicidad: "PUBLICIDAD DEMO",
+//         cantidad: 1250
+//     }
+// };
 
 
 // ============================================================
@@ -122,7 +137,8 @@ ordenExacta.addEventListener("change", () => {
 function consultarAPI(numero) {
     return new Promise((resolve) => {
         setTimeout(() => {
-            resolve(baseDatosSimulada[numero] || null);
+            const ticket = basedeDatos.tickets.find(t => t.codigo === numero);
+            resolve(ticket || null);
         }, 600);
     });
 }
@@ -135,8 +151,8 @@ function consultarAPI(numero) {
 document.getElementById("consultarOrden").addEventListener("click", consultarOrden);
 
 async function consultarOrden() {
-    const numero = numeroOrden.value.trim();
-
+    const numero = document.getElementById("numeroOrden").value.trim();
+    
     if (!numero) {
         mostrarError("Introduzca un número de orden.");
         return;
@@ -170,7 +186,7 @@ async function consultarOrden() {
 
         // Si NO es exacta, usamos las unidades introducidas manualmente.
         if (!exacta) {
-            datosOrdenActual.totalUnidades = unidadesManuales;
+            datosOrdenActual.cantidad = unidadesManuales;
         }
 
         mostrarResumenConfiguracion();
@@ -192,12 +208,11 @@ unidadesPorCajaInput.addEventListener("input", actualizarCalculo);
 
 function mostrarResumenConfiguracion() {
     const datos = datosOrdenActual;
-
     document.getElementById("resumenOrden").innerHTML = `
-        <strong>Orden:</strong> ${escaparHTML(datos.ordenFabricacion)}<br>
-        <strong>Cliente:</strong> ${escaparHTML(datos.nombreCliente)}<br>
-        <strong>Publicidad:</strong> ${escaparHTML(datos.publicidad)}<br>
-        <strong>Total unidades:</strong> ${formatearNumero(datos.totalUnidades)}
+        <strong>Orden:</strong> ${escaparHTML(datos.codigo)}<br>
+        <strong>Cliente:</strong> ${escaparHTML(datos.cliente)}<br>
+        <strong>Publicidad:</strong> ${escaparHTML(datos.descripcion)}<br>
+        <strong>Total unidades:</strong> ${formatearNumero(datos.cantidad)}
     `;
 
     unidadesPorCajaInput.value = "";
@@ -216,7 +231,7 @@ function actualizarCalculo() {
         return;
     }
 
-    const total = Number(datosOrdenActual.totalUnidades);
+    const total = Number(datosOrdenActual.cantidad);
     const numeroCajas = Math.ceil(total / unidadesPorCaja);
     const resto = total % unidadesPorCaja;
 
@@ -243,7 +258,6 @@ function generarEtiquetas() {
         mostrarError("No hay ninguna orden cargada.");
         return;
     }
-
     const unidadesPorCaja = parseInt(unidadesPorCajaInput.value, 10);
 
     if (!Number.isInteger(unidadesPorCaja) || unidadesPorCaja <= 0) {
@@ -251,20 +265,20 @@ function generarEtiquetas() {
         return;
     }
 
-    const totalUnidades = Number(datosOrdenActual.totalUnidades);
+    const cantidad = Number(datosOrdenActual.cantidad);
 
-    if (!Number.isFinite(totalUnidades) || totalUnidades <= 0) {
+    if (!Number.isFinite(cantidad) || cantidad <= 0) {
         mostrarError("El total de unidades no es válido.");
         return;
     }
 
-    const numeroCajas = Math.ceil(totalUnidades / unidadesPorCaja);
+    const numeroCajas = Math.ceil(cantidad / unidadesPorCaja);
 
     datosOrdenActual.unidadesPorCaja = unidadesPorCaja;
     datosOrdenActual.numeroCajas = numeroCajas;
 
     datosOrdenActual.cajas = calcularCajas(
-        totalUnidades,
+        cantidad,
         unidadesPorCaja
     );
 
@@ -272,7 +286,7 @@ function generarEtiquetas() {
 
     document.getElementById("informacionCajas").textContent =
         `${numeroCajas} ${numeroCajas === 1 ? "caja" : "cajas"} · ` +
-        `${formatearNumero(totalUnidades)} unidades`;
+        `${formatearNumero(cantidad)} unidades`;
 
     cambiarPantalla("pantallaEtiqueta");
 }
@@ -282,9 +296,9 @@ function generarEtiquetas() {
 // CALCULAR DISTRIBUCIÓN DE CAJAS
 // ============================================================
 
-function calcularCajas(totalUnidades, unidadesPorCaja) {
+function calcularCajas(cantidad, unidadesPorCaja) {
     const cajas = [];
-    let restantes = totalUnidades;
+    let restantes = cantidad;
 
     while (restantes > 0) {
         const unidadesEstaCaja = Math.min(
@@ -338,21 +352,18 @@ function crearEtiqueta(
 
     etiqueta.innerHTML = `
         <div class="etiqueta-titulo">
-            ORDEN FABRICACION Nº: <strong>${escaparHTML(datos.ordenFabricacion)}</strong>
+            ORDEN FABRICACION Nº: <strong>${escaparHTML(datos.codigo)}</strong>
         </div>
-
         <div class="etiqueta-cliente">
-            NOMBRE CLIENTE: <strong>${escaparHTML(datos.nombreCliente)}</strong>
-        </div>
-
+            NOMBRE CLIENTE: <strong>${escaparHTML(datos.cliente)}</strong>
+        </div>        
         <div class="etiqueta-publicidad">
-            PUBLICIDAD: <strong>${escaparHTML(datos.publicidad)}</strong>
+            PUBLICIDAD: <strong>${escaparHTML(datos.descripcion)}</strong>
         </div>
-
         <div class="etiqueta-datos">
             ${crearFilaEtiqueta(
                 "TOTAL UNIDS:",
-                formatearNumero(datos.totalUnidades)
+                formatearNumero(datos.cantidad)
             )}
 
             ${crearFilaEtiqueta(
@@ -364,7 +375,6 @@ function crearEtiqueta(
             UNIDADES EN CAJA:
             <strong>${formatearNumero(unidadesEstaCaja)} </strong>
         </div>
-
         <div class="etiqueta-caja">
         <strong>CAJA ${numeroCaja} DE ${numeroCajas}</strong>
         </div>
@@ -396,16 +406,16 @@ function abrirEdicion() {
     }
 
     document.getElementById("editarOrden").value =
-        datosOrdenActual.ordenFabricacion || "";
+        datosOrdenActual.codigo || "";
 
     document.getElementById("editarCliente").value =
-        datosOrdenActual.nombreCliente || "";
+        datosOrdenActual.cliente || "";
 
     document.getElementById("editarPublicidad").value =
-        datosOrdenActual.publicidad || "";
+        datosOrdenActual.descripcion || "";
 
     document.getElementById("editarTotal").value =
-        datosOrdenActual.totalUnidades || "";
+        datosOrdenActual.cantidad || "";
 
     document.getElementById("editarNumeroCajas").value =
         datosOrdenActual.cajas.length;
@@ -552,16 +562,16 @@ function guardarEdicion() {
     }
 
     // Guardamos todos los cambios manuales.
-    datosOrdenActual.ordenFabricacion =
+    datosOrdenActual.codigo =
         document.getElementById("editarOrden").value.trim();
 
-    datosOrdenActual.nombreCliente =
+    datosOrdenActual.cliente =
         document.getElementById("editarCliente").value.trim();
 
-    datosOrdenActual.publicidad =
+    datosOrdenActual.descripcion =
         document.getElementById("editarPublicidad").value.trim();
 
-    datosOrdenActual.totalUnidades = totalIntroducido;
+    datosOrdenActual.cantidad = totalIntroducido;
 
     datosOrdenActual.numeroCajas = numeroCajas;
 
