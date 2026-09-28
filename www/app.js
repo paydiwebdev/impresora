@@ -627,15 +627,22 @@ document.getElementById("imprimirEtiquetas")
             typeof Capacitor.isNativePlatform === "function" &&
             Capacitor.isNativePlatform();
 
-        if (dentroDeLaApp) {
-            try {
-                const EtiquetaPrinter = Capacitor.registerPlugin("EtiquetaPrinter");
-                await EtiquetaPrinter.print(); // papel 100 x 50 mm
-            } catch (err) {
-                alert("No se pudo abrir la impresión: " + (err.message || err));
-            }
-        } else {
+        if (!dentroDeLaApp) {
             window.print(); // PC / navegador
+            return;
+        }
+
+        const EtiquetaPrinter = Capacitor.Plugins && Capacitor.Plugins.EtiquetaPrinter;
+
+        if (!EtiquetaPrinter) {
+            alert("El plugin de impresión no está incluido en esta versión de la app.");
+            return;
+        }
+
+        try {
+            await EtiquetaPrinter.print(); // papel 100 x 50 mm
+        } catch (err) {
+            alert("No se pudo abrir la impresión: " + (err.message || err));
         }
     });
 // ============================================================
