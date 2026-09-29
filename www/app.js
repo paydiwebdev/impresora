@@ -352,10 +352,10 @@ function crearEtiqueta(
 
     etiqueta.innerHTML = `
         <div class="etiqueta-titulo">
-            ORDEN FABRICACION Nº: <strong>${escaparHTML(datos.codigo)}</strong>
+            ORDEN FABRICACION Nº: <strong class=etiqueta-orden-trabajo>${escaparHTML(datos.codigo)}</strong>
         </div>
         <div class="etiqueta-cliente">
-            NOMBRE CLIENTE: <strong>${escaparHTML(datos.cliente)}</strong>
+            CLIENTE: <strong>${escaparHTML(datos.cliente)}</strong>
         </div>        
         <div class="etiqueta-publicidad">
             PUBLICIDAD: <strong>${escaparHTML(datos.descripcion)}</strong>
@@ -366,10 +366,6 @@ function crearEtiqueta(
                 formatearNumero(datos.cantidad)
             )}
 
-            ${crearFilaEtiqueta(
-                "UNIDADES X CAJA:",
-                formatearNumero(datos.unidadesPorCaja)
-            )}
         </div>
         <div class="etiqueta-unidades">
             UNIDADES EN CAJA:

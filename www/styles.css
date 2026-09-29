@@ -362,9 +362,9 @@ label {
 
     background: white;
 
-    border: 1px solid #000;
+    border: 0px solid #000;
 
-    padding: 0.3cm;
+    padding: 0cm;
 
     display: flex;
 
@@ -386,13 +386,16 @@ label {
 
     text-align: left;
 
-    border-bottom: 1px solid #000;
+    border-bottom: 0px solid #000;
 
-    padding-bottom: 4px;
+    padding-bottom: 0px;
 
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
-
+.etiqueta-orden-trabajo{
+    font-size: 32;
+    text-align: left;
+}
 
 /* ==============================
    FILAS
@@ -405,13 +408,13 @@ label {
 
     align-items: center;
 
-    gap: 10px;
+    gap: 0px;
 
     font-size: 10px;
 
     line-height: 1.2;
 
-    margin-bottom: 3px;
+    margin-bottom: 0px;
 }
 
 .etiqueta-label {
@@ -435,9 +438,9 @@ label {
 .etiqueta-caja {
     margin-top: auto;
 
-    padding: 5px;
+    padding: 0px;
 
-    border: 2px solid #000;
+    border: 1px solid #000;
 
     text-align: center;
 
@@ -445,6 +448,7 @@ label {
 
     font-weight: bold;
 }
+
 
 /* EDICIÓN */
 
@@ -528,7 +532,7 @@ label {
 /* IMPRESIÓN */
 
 @page {
-    size: 10cm 5cm;
+    size: 417px 191px;
     margin: 0;
 }
 
@@ -536,9 +540,8 @@ label {
 @media print {
     html,
     body {
-        width: 100%;
-        margin: 0;
-        padding: 0;
+        width: fit-content;
+        height: fit-content;
         background: white;
     }
 
@@ -570,8 +573,8 @@ label {
     }
 
     .etiqueta-carnet {
-        width: 100%;          /* fills the paper width, whatever the paper is */
-        height: 4.95cm;       /* 5 cm minus a hair so it never spills onto a 2nd sheet */
+        width: fit-content;          /* fills the paper width, whatever the paper is */
+        height: fit-content;       /* 5 cm minus a hair so it never spills onto a 2nd sheet */
         margin: 0;
         border: none;         /* no outer line */
         overflow: hidden;
