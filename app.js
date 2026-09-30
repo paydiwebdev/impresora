@@ -306,7 +306,7 @@ async function iniciarBaseDeDatos() {
 // 4. Rebuild the app (npx cap sync android), open it and read the alert.
 // =============================================================================
  
-async function diagnosticarBaseDeDatos() {
+
     const ORDEN_PRUEBA = "803";
     let panelDiagnostico = null;
     
@@ -413,7 +413,7 @@ async function diagnosticarBaseDeDatos() {
         anotar("FIN del diagnostico");
     }
     
-}
+
  
 
 
