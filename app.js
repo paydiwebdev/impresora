@@ -210,7 +210,7 @@ function consultarAPI(numero) {
  */
 async function consultarOrden() {
     const numero = numeroOrdenInput.value.trim();
-
+    iniciarBaseDeDatos();
     if (!numero) {
         mostrarError("Introduzca un número de orden.");
         return;
