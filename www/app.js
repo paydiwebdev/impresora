@@ -36,8 +36,7 @@ let datosOrdenActual = null;
 /** When true, a fresh Excel is requested from the launcher on startup. */
 const AUTO_ACTUALIZAR = true;
 
-const RUTA_EXCEL = "/datos/pedidos.xls";
-const RUTA_ACTUALIZAR = "/api/actualizar";
+
 
 const numeroOrdenInput = document.getElementById("numeroOrden");
 const ordenExacta = document.getElementById("ordenExacta");
@@ -295,6 +294,124 @@ async function iniciarBaseDeDatos() {
         console.warn("No se pudo actualizar (¿sin conexión?):", error);
     }
 }
+// =============================================================================
+// TEMPORARY DIAGNOSTIC (Android). Remove once the database loads correctly.
+//
+// 1. Paste this function anywhere in app.js (e.g. below iniciarBaseDeDatos).
+// 2. In registrarEventos(), change
+//        window.addEventListener("load", iniciarBaseDeDatos);
+//    to
+//        window.addEventListener("load", diagnosticarBaseDeDatos);
+// 3. In consultarOrden(), delete the line "iniciarBaseDeDatos();" while testing.
+// 4. Rebuild the app (npx cap sync android), open it and read the alert.
+// =============================================================================
+ 
+const ORDEN_PRUEBA = "803";
+let panelDiagnostico = null;
+
+/** Appends one line to the on-screen log. */
+function anotarDiagnostico(linea) {
+    if (!panelDiagnostico) return;
+    panelDiagnostico.textContent += linea + "\n";
+    panelDiagnostico.scrollTop = panelDiagnostico.scrollHeight;
+}
+
+/** Creates the log panel as soon as app.js runs (before the load event). */
+function iniciarPanelDiagnostico() {
+    const crear = () => {
+        panelDiagnostico = document.createElement("pre");
+        panelDiagnostico.style.cssText =
+            "position:fixed;left:0;right:0;bottom:0;max-height:55%;overflow:auto;" +
+            "margin:0;padding:8px;background:#000;color:#0f0;font:12px monospace;" +
+            "white-space:pre-wrap;z-index:99999;";
+        panelDiagnostico.addEventListener("click", () => panelDiagnostico.remove());
+        document.body.appendChild(panelDiagnostico);
+        anotarDiagnostico("DIAG v2 - app.js cargado (toca aqui para cerrar)");
+    };
+
+    if (document.body) crear();
+    else document.addEventListener("DOMContentLoaded", crear);
+}
+
+/** Rejects if the promise does not settle in time (detects hanging calls). */
+function conTimeout(promesa, ms, nombre) {
+    return Promise.race([
+        promesa,
+        new Promise((_, rechazar) =>
+            setTimeout(() => rechazar(new Error("Sin respuesta tras " + ms / 1000 + " s (" + nombre + ")")), ms)
+        )
+    ]);
+}
+
+async function diagnosticarBaseDeDatos() {
+    const anotar = anotarDiagnostico;
+    const mensaje = (e) => String((e && e.message) || e);
+
+    anotar("Evento load recibido");
+    anotar("Capacitor: " + (window.Capacitor
+        ? "si (" + (Capacitor.getPlatform ? Capacitor.getPlatform() : "?") + ")"
+        : "NO"));
+    anotar("Plugin Filesystem: " + (window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Filesystem ? "si" : "NO"));
+    anotar("SheetJS (XLSX): " + typeof XLSX);
+    anotar("loadTicketData: " + typeof loadTicketData);
+
+    // 1. Is there a file stored already?
+    anotar("1. Leyendo archivo guardado...");
+    try {
+        const { data } = await conTimeout(
+            obtenerFilesystem().readFile({ path: NOMBRE_EXCEL, directory: "DATA" }),
+            10000, "readFile"
+        );
+        anotar("   OK (" + data.length + " caracteres base64)");
+    } catch (e) {
+        anotar("   " + mensaje(e));
+    }
+
+    // 2. Can the app download it from GitHub?
+    anotar("2. Descargando de GitHub (max 30 s)...");
+    let blob = null;
+    try {
+        blob = await descargarExcel();
+        anotar("   OK (" + blob.size + " bytes)");
+    } catch (e) {
+        anotar("   ERROR: " + mensaje(e));
+    }
+
+    // 3. Can it be written to storage?
+    if (blob) {
+        anotar("3. Guardando...");
+        try {
+            await conTimeout(guardarExcel(blob), 15000, "writeFile");
+            anotar("   OK");
+        } catch (e) {
+            anotar("   ERROR: " + mensaje(e));
+        }
+    }
+
+    // 4. Can it be read back and parsed?
+    anotar("4. Cargando y analizando...");
+    try {
+        const ok = await conTimeout(cargarExcelLocal(), 15000, "cargarExcelLocal");
+        anotar("   " + (ok ? "OK" : "devolvio false (no hay archivo guardado)"));
+        await new Promise((resolver) => setTimeout(resolver, 1500));
+    } catch (e) {
+        anotar("   ERROR: " + mensaje(e));
+    }
+
+    // 5. What ended up in memory?
+    const tickets = basedeDatos.tickets;
+    anotar("5. Ordenes en memoria: " + tickets.length);
+
+    if (tickets.length) {
+        anotar("   Primer registro: " + JSON.stringify(tickets[0]).slice(0, 200));
+        anotar("   typeof codigo: " + typeof tickets[0].codigo);
+        anotar("   Existe " + ORDEN_PRUEBA + " con ===: " + tickets.some((t) => t.codigo === ORDEN_PRUEBA));
+        anotar("   Existe " + ORDEN_PRUEBA + " con String(): " + tickets.some((t) => String(t.codigo) === ORDEN_PRUEBA));
+    }
+
+    anotar("FIN del diagnostico");
+}
+ 
 
 
 /** Logs how many orders are currently in memory. */
@@ -332,7 +449,7 @@ function consultarAPI(numero) {
  */
 async function consultarOrden() {
     const numero = numeroOrdenInput.value.trim();
-    iniciarBaseDeDatos();
+    // iniciarBaseDeDatos();
     if (!numero) {
         mostrarError("Introduzca un número de orden.");
         return;
@@ -829,8 +946,8 @@ function manejarTeclaEnter(event) {
 /** Attaches every event listener. Called once when the script loads. */
 function registrarEventos() {
     // Startup: runs after all scripts have loaded so loadTicketData exists.
-    window.addEventListener("load", iniciarBaseDeDatos);
-
+    // window.addEventListener("load", iniciarBaseDeDatos);
+    window.addEventListener("load", diagnosticarBaseDeDatos);
     // Global shortcuts
     document.addEventListener("keydown", manejarTeclaEnter);
 
@@ -858,5 +975,5 @@ function registrarEventos() {
     // Error screen
     porId("volverError").addEventListener("click", () => cambiarPantalla("pantallaEntrada"));
 }
-
+iniciarPanelDiagnostico();
 registrarEventos();
