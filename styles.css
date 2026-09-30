@@ -532,21 +532,22 @@ label {
 /* IMPRESIÓN */
 
 @page {
-    size: 417px 191px;
+    size: 100mm 50mm;
     margin: 0;
 }
-
 
 @media print {
     html,
     body {
-        width: fit-content;
-        height: fit-content;
+        width: 100mm;
+        height: 50mm;
+        margin: 0;
+        padding: 0;
         background: white;
     }
 
     body {
-        min-height: auto;
+        min-height: 0;
     }
 
     .pantalla {
@@ -557,8 +558,11 @@ label {
 
     #pantallaEtiqueta {
         display: block !important;
-        background: white;
+        width: 100mm;
+        height: 50mm;
+        margin: 0;
         padding: 0;
+        background: white;
     }
 
     #pantallaEtiqueta .barra-superior,
@@ -568,16 +572,25 @@ label {
 
     #contenedorEtiqueta {
         display: block;
+        width: 100mm;
+        height: 50mm;
         margin: 0;
+        padding: 0;
         gap: 0;
     }
 
     .etiqueta-carnet {
-        width: fit-content;          /* fills the paper width, whatever the paper is */
-        height: fit-content;       /* 5 cm minus a hair so it never spills onto a 2nd sheet */
+        width: 100mm;
+        height: 50mm;
         margin: 0;
-        border: none;         /* no outer line */
+        padding: 2mm;
+        box-sizing: border-box;
+        border: none;
         overflow: hidden;
+    
+        display: flex;
+        flex-direction: column;
+    
         page-break-after: always;
         break-after: page;
     }
