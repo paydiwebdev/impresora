@@ -30,7 +30,7 @@ jobs:
           sed "s/__APP_ID__/$APP_ID/g" native/EtiquetaPrinterPlugin.java.template > "$JAVA_DIR/EtiquetaPrinterPlugin.java"
 
       - name: Install capacitor/filesystem
-        run: npm install @capacitor/filesystem
+        run: npm install @capacitor/filesystem@5.2.2
       - name: Sincronizar
         run: npx cap sync
         
