@@ -17,9 +17,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-      - name: Install capacitor/filesystem
-        run: npm install @capacitor/filesystem
-
+     
       - name: Add Android platform
         run: npx cap add android
 
@@ -31,6 +29,11 @@ jobs:
           sed "s/__APP_ID__/$APP_ID/g" native/MainActivity.java.template > "$JAVA_DIR/MainActivity.java"
           sed "s/__APP_ID__/$APP_ID/g" native/EtiquetaPrinterPlugin.java.template > "$JAVA_DIR/EtiquetaPrinterPlugin.java"
 
+      - name: Install capacitor/filesystem
+        run: npm install @capacitor/filesystem
+      - name: Sincronizar
+        run: npx cap sync
+        
       - name: Sync web assets into Android project
         run: npx cap sync android
 
