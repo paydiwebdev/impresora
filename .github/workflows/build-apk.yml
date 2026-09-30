@@ -17,6 +17,8 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+      - name: Install capacitor/filesystem
+        run: npm install @capacitor/filesystem
 
       - name: Add Android platform
         run: npx cap add android
