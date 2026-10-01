@@ -1,13 +1,13 @@
 # Generador de Etiquetas de Cajas
 
-Aplicación web (HTML + CSS + JavaScript, sin servidor ni conexión) que:
+Aplicación web (HTML + CSS + JavaScript) que:
 
-1. Carga un informe de fabricaciones en formato `.xls` / `.xlsx`.
+1. Descarga/Carga un informe de fabricaciones en formato `.xls` / `.xlsx`.
 2. Busca una orden de fabricación por su número.
 3. Calcula cuántas cajas hacen falta según las unidades por caja.
 4. Genera e imprime una etiqueta de **10 × 5 cm** por cada caja.
 
-Funciona en **PC (Windows)**, **tablet** y **móvil Android**. Todo se ejecuta en local: no usa API remota ni necesita wifi.
+Funciona en **Android**. Es autocontenida pero puede descargar la base de datos de la url seleccionada.
 
 ---
 
@@ -37,14 +37,14 @@ Funciona en **PC (Windows)**, **tablet** y **móvil Android**. Todo se ejecuta e
 | **Edición completa** | Permite cambiar orden, cliente, publicidad, total, nº de cajas, unidades por caja y las unidades de **cada caja** individualmente. Si las cajas no suman el total indicado, la app avisa antes de guardar. |
 | **Error** | Aparece si falta el nº de orden, la orden no existe, etc. |
 
-> El informe se carga **una vez por sesión**. Los datos viven en memoria: si se cierra la app, hay que volver a cargar el archivo (ver [sección 9](#9-limitaciones-conocidas)).
+>El informe se descarga una vez abierta la app y cada vez que se hace una consulta. Los datos se guardan en local cada vez asi que si falla la conexión usará lo que tenga.
 
 ### Contenido de cada etiqueta
 
 - ORDEN FABRICACION Nº
 - NOMBRE CLIENTE
 - PUBLICIDAD (columna *Descripción* del Excel)
-- TOTAL UNIDS y UNIDADES X CAJA
+- TOTAL UNIDS 
 - UNIDADES EN CAJA
 - CAJA *n* DE *N*
 
@@ -79,7 +79,6 @@ Reglas que aplica `xls-loader.js`:
 - Las filas completamente vacías se descartan.
 - Las columnas se localizan **por nombre**, no por posición, así que el orden de columnas no importa. Los nombres deben coincidir exactamente (con tildes):
   `Código`, `Descripción`, `Cliente`, `Artículo`, `Fecha`, `Fecha entrega`, `Cantidad`, `Arts.Fabricados`.
-- `Cliente` y `Artículo` son una sola columna cada una (por ejemplo `46860 - SG BRAND MERCHANDISING`); no se separan.
 
 Cada fila se convierte en un objeto:
 
@@ -158,50 +157,15 @@ Estilos de pantallas y etiquetas, más las reglas `@page` y `@media print` que c
 
 ---
 
-## 5. Ejecutar en Windows
 
-No hay que instalar nada.
+## 5. Instalar en Android
 
-1. Copiar la carpeta `www/` al PC.
-2. Comprobar que existe `www\lib\xlsx.full.min.js`.
-3. Abrir `www\index.html` con el navegador (doble clic o *Abrir con*).
+La app esta empaquetada como **APK** con [Capacitor](https://capacitorjs.com/) (una app nativa que contiene la web dentro de un WebView).
 
-Navegadores en **Windows 7 (32 bits)**: usar la última versión que lo soporta, **Chrome 109** o **Firefox ESR 115**. La app usa sintaxis moderna (`?.`, `??`, `replaceAll`) que ambos admiten.
+El APK se puede compilar **en la nube con GitHub Actions**.
 
-Para imprimir: botón **IMPRIMIR** → en el diálogo del navegador:
 
-- **Destino:** la impresora de etiquetas.
-- **Tamaño de papel:** el que coincida con la etiqueta (10 × 5 cm o el más cercano que ofrezca el driver).
-- **Márgenes:** Ninguno.
-- **Escala:** 100 % (no usar "Ajustar a la página").
-
----
-
-## 6. Instalar en Android
-
-Un navegador móvil no abre bien `file://`, y hace falta que funcione **sin wifi**. La solución es empaquetar la app como **APK** con [Capacitor](https://capacitorjs.com/) (una app nativa que contiene la web dentro de un WebView).
-
-Las herramientas modernas de Android (Android Studio, Node actual) **no funcionan en Windows 7 de 32 bits**, así que el APK se compila **en la nube con GitHub Actions** (gratis). El PC solo necesita un navegador.
-
-### 6.1 Crear el repositorio
-
-1. Crear cuenta en <https://github.com> y un repositorio nuevo (por ejemplo `ticket-app`).
-2. Subir los archivos con la web de GitHub. **No hace falta crear carpetas**: en *Add file → Create new file*, escribir la ruta completa en el campo de nombre y GitHub crea las carpetas al teclear `/`.
-
-| Ruta a escribir | Contenido |
-|---|---|
-| `package.json` | ver 6.2 |
-| `capacitor.config.json` | ver 6.2 |
-| `.github/workflows/build-apk.yml` | ver 6.2 |
-| `native/MainActivity.java.template` | plugin de impresión (ver [sección 7](#7-impresión)) |
-| `native/EtiquetaPrinterPlugin.java.template` | plugin de impresión (ver [sección 7](#7-impresión)) |
-| `www/index.html` | tu `index.html` |
-| `www/app.js` | tu `app.js` |
-| `www/styles.css` | tu `styles.css` |
-| `www/xls-loader.js` | tu `xls-loader.js` |
-| `www/lib/xlsx.full.min.js` | SheetJS (ver 6.3) |
-
-### 6.2 Archivos de configuración
+### 6.1 Archivos de configuración
 
 **`package.json`**
 
@@ -215,7 +179,7 @@ Las herramientas modernas de Android (Android Studio, Node actual) **no funciona
   },
   "dependencies": {
     "@capacitor/core": "^5.7.0",
-    "@capacitor/android": "^5.7.0"
+    "@capacitor/android": "^5.7.0",
   },
   "devDependencies": {
     "@capacitor/cli": "^5.7.0"
@@ -268,6 +232,12 @@ jobs:
           sed "s/__APP_ID__/$APP_ID/g" native/MainActivity.java.template > "$JAVA_DIR/MainActivity.java"
           sed "s/__APP_ID__/$APP_ID/g" native/EtiquetaPrinterPlugin.java.template > "$JAVA_DIR/EtiquetaPrinterPlugin.java"
 
+      - name: Install capacitor/filesystem
+        run: npm install @capacitor/filesystem@5.2.2
+      
+      - name: Sincronizar
+        run: npx cap sync
+
       - name: Sync web assets into Android project
         run: npx cap sync android
 
@@ -292,53 +262,26 @@ jobs:
 
 > Los dos archivos `.java.template` contienen el texto `__APP_ID__`. El workflow lo sustituye por el `appId` de `capacitor.config.json`: **no lo edites a mano**.
 
-### 6.3 SheetJS (la librería que lee el Excel)
+### 6.2 SheetJS (la librería que lee el Excel)
 
-No se instala con npm: se descarga **un archivo** y se incluye con la app (así funciona sin internet).
+No se instala con npm: se descarga **un archivo** apk directamente de la repo.
 
 1. Descargar <https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js>
 2. Guardarlo como `xlsx.full.min.js` y subirlo a `www/lib/xlsx.full.min.js`.
 
-> No enlazar el script a la URL de internet en `index.html`: la app debe funcionar sin conexión.
 
-### 6.4 Compilar y descargar el APK
+### 6.3 Compilar y descargar el APK
 
-1. Al confirmar (*Commit*) los archivos en la rama `main`, GitHub Actions arranca solo.
-2. Ir a la pestaña **Actions** del repositorio y esperar a que termine (unos 3-5 min, marca verde). Si falla, abrir la ejecución y leer el paso en rojo.
-3. Entrar en la ejecución, bajar a **Artifacts**, descargar `app-debug` y descomprimir el ZIP: dentro está `app-debug.apk`.
-4. Para recompilar sin cambiar nada: **Actions → Build APK → Run workflow**.
+1. Ir a la pestaña **Actions** del repositorio **Actions → Build APK → Run workflow** y esperar a que termine (unos 3-5 min, marca verde). Si falla, abrir la ejecución y leer el paso en rojo.
+2. Entrar en la ejecución, bajar a **Artifacts**, descargar `app-debug` y descomprimir el ZIP: dentro está `app-debug.apk`.
 
-### 6.5 Instalar en el móvil o tablet
+### 6.4 Instalar en el móvil o tablet
 
-1. Pasar el `app-debug.apk` al dispositivo (cable USB, correo, Drive...). Es lo único que requiere conexión y solo se hace una vez.
-2. Abrirlo desde el móvil. Android pedirá **permitir instalar apps de esta fuente**: activarlo.
-3. Instalar y abrir la app. Desde ese momento funciona **100 % sin conexión**.
-4. Para cargar el informe, pasar el `.xls` al dispositivo (carpeta *Descargas*, por ejemplo) y elegirlo con el selector de archivo de la app.
+1. Abrir `app-debug.apk` desde el móvil. Android pedirá **permitir instalar apps de esta fuente**: activarlo.
+2. Instalar y abrir la app
 
-**Requisitos del dispositivo:** Android 5.1 o superior, y el componente *Android System WebView* razonablemente actualizado (la app usa JavaScript moderno). Se actualiza desde Google Play.
+**Requisitos del dispositivo:** Android 5.1 o superior, y el componente *Android System WebView* razonablemente actualizado (la app usa JavaScript moderno).
 
-### 6.6 Actualizar la app
-
-Modificar el archivo en GitHub → se recompila solo → descargar el nuevo APK.
-
-> ⚠️ **Desinstala la versión anterior antes de instalar la nueva.** Cada compilación en la nube genera una firma de depuración distinta, y Android rechaza actualizar encima con el error *"App no instalada"*. Para actualizar sin desinstalar habría que firmar el APK con un *keystore* propio.
-
----
-
-## 7. Impresión
-
-El botón **IMPRIMIR** usa un método distinto según dónde se ejecute la app:
-
-| Entorno | Método |
-|---|---|
-| **Windows / navegador** | `window.print()` → diálogo de impresión del navegador (ver [sección 5](#5-ejecutar-en-windows)). |
-| **Android (APK)** | Plugin nativo `EtiquetaPrinter` → diálogo de impresión de Android (`PrintManager`). |
-
-### Por qué hace falta un plugin en Android
-
-`window.print()` **no funciona** dentro del WebView de una app Android. Por eso el proyecto incluye un pequeño plugin en Java (`native/EtiquetaPrinterPlugin.java.template`) que envía el contenido actual de la pantalla al sistema de impresión de Android. Reutiliza las reglas `@media print` del CSS, así que solo se imprime la pantalla de etiquetas. El papel por defecto es de **100 × 50 mm**.
-
-`MainActivity.java.template` solo registra el plugin. El workflow de GitHub copia ambos archivos al proyecto Android al compilar (paso *Install custom print plugin*).
 
 ### Código del botón en `app.js`
 
@@ -377,13 +320,9 @@ Para otro tamaño de etiqueta: `EtiquetaPrinter.print({ widthMm: 100, heightMm: 
 
 El diálogo de Android solo lista impresoras que tengan un **servicio de impresión** instalado (Mopria, HP, Brother, Epson o la app del fabricante). Si la impresora de etiquetas no aparece, hay que instalar el servicio de impresión de su fabricante desde Google Play.
 
-### Probar sin impresora
 
-Pulsar IMPRIMIR y, en el diálogo, elegir **"Guardar como PDF"**. Sirve para comprobar el diseño y que hay una etiqueta por página.
 
----
-
-## 8. Personalizar la etiqueta
+## 7. Personalizar la etiqueta
 
 Todo está en `styles.css`.
 
@@ -408,21 +347,19 @@ Reglas importantes para la impresión:
 
 ---
 
-## 9. Limitaciones conocidas
+## 8. Limitaciones conocidas
 
-- **Los datos no se guardan.** `basedeDatos` está en memoria: al cerrar la app hay que cargar el Excel de nuevo. Podría persistirse con `localStorage` (guardando el JSON de los tickets).
 - **Órdenes duplicadas.** La búsqueda devuelve la **primera** fila con ese código.
 - **Fechas.** `fecha` y `fechaEntrega` salen con formato ambiguo (`"10/3/23"`). La app no las usa por ahora; habría que corregir su conversión antes de mostrarlas.
 - **Nombre de columnas.** Si el sistema que genera el informe cambia el nombre de una cabecera, esa columna llegará vacía.
 - **`index.html`.** Faltan `<!DOCTYPE html>` y la etiqueta `<html>`. Funciona, pero conviene añadirlos.
 - **`nuevaOrden()`** usa `numeroOrden` como variable global (el elemento con ese `id`). Funciona, pero es más robusto usar `document.getElementById("numeroOrden")`.
 - **Teclado virtual.** El código está comentado y sin terminar; se usa el teclado nativo del dispositivo.
-- **CSS antiguo comentado.** Hay un bloque grande de estilos de etiqueta comentado en `styles.css`; se puede borrar.
 - El APK es de **depuración**, válido para uso propio. Publicar en Google Play requeriría un APK/AAB firmado en modo *release*.
 
 ---
 
-## 10. Solución de problemas
+## 9. Solución de problemas
 
 | Síntoma | Causa y solución |
 |---|---|
