@@ -294,18 +294,7 @@ async function iniciarBaseDeDatos() {
         console.warn("No se pudo actualizar (¿sin conexión?):", error);
     }
 }
-// =============================================================================
-// TEMPORARY DIAGNOSTIC (Android). Remove once the database loads correctly.
-//
-// 1. Paste this function anywhere in app.js (e.g. below iniciarBaseDeDatos).
-// 2. In registrarEventos(), change
-//        window.addEventListener("load", iniciarBaseDeDatos);
-//    to
-//        window.addEventListener("load", diagnosticarBaseDeDatos);
-// 3. In consultarOrden(), delete the line "iniciarBaseDeDatos();" while testing.
-// 4. Rebuild the app (npx cap sync android), open it and read the alert.
-// =============================================================================
- 
+
 
  
 
@@ -842,8 +831,7 @@ function manejarTeclaEnter(event) {
 /** Attaches every event listener. Called once when the script loads. */
 function registrarEventos() {
     // Startup: runs after all scripts have loaded so loadTicketData exists.
-    // window.addEventListener("load", iniciarBaseDeDatos);
-    window.addEventListener("load", diagnosticarBaseDeDatos);
+    window.addEventListener("load", iniciarBaseDeDatos);
     // Global shortcuts
     document.addEventListener("keydown", manejarTeclaEnter);
 
