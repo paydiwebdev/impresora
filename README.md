@@ -17,12 +17,10 @@ Funciona en **Android**. Es autocontenida pero puede descargar la base de datos 
 2. [Formato del Excel](#2-formato-del-excel)
 3. [Estructura del proyecto](#3-estructura-del-proyecto)
 4. [Cómo funciona por dentro](#4-cómo-funciona-por-dentro)
-5. [Ejecutar en Windows](#5-ejecutar-en-windows)
-6. [Instalar en Android](#6-instalar-en-android)
-7. [Impresión](#7-impresión)
-8. [Personalizar la etiqueta](#8-personalizar-la-etiqueta)
-9. [Limitaciones conocidas](#9-limitaciones-conocidas)
-10. [Solución de problemas](#10-solución-de-problemas)
+5. [Instalar en Android](#6-instalar-en-android)
+6. [Personalizar la etiqueta](#8-personalizar-la-etiqueta)
+7. [Limitaciones conocidas](#9-limitaciones-conocidas)
+8. [Solución de problemas](#10-solución-de-problemas)
 
 ---
 
@@ -165,7 +163,7 @@ La app esta empaquetada como **APK** con [Capacitor](https://capacitorjs.com/) (
 El APK se puede compilar **en la nube con GitHub Actions**.
 
 
-### 6.1 Archivos de configuración
+### 5.1 Archivos de configuración
 
 **`package.json`**
 
@@ -262,7 +260,7 @@ jobs:
 
 > Los dos archivos `.java.template` contienen el texto `__APP_ID__`. El workflow lo sustituye por el `appId` de `capacitor.config.json`: **no lo edites a mano**.
 
-### 6.2 SheetJS (la librería que lee el Excel)
+### 5.2 SheetJS (la librería que lee el Excel)
 
 No se instala con npm: se descarga **un archivo** apk directamente de la repo.
 
@@ -270,12 +268,12 @@ No se instala con npm: se descarga **un archivo** apk directamente de la repo.
 2. Guardarlo como `xlsx.full.min.js` y subirlo a `www/lib/xlsx.full.min.js`.
 
 
-### 6.3 Compilar y descargar el APK
+### 5.3 Compilar y descargar el APK
 
 1. Ir a la pestaña **Actions** del repositorio **Actions → Build APK → Run workflow** y esperar a que termine (unos 3-5 min, marca verde). Si falla, abrir la ejecución y leer el paso en rojo.
 2. Entrar en la ejecución, bajar a **Artifacts**, descargar `app-debug` y descomprimir el ZIP: dentro está `app-debug.apk`.
 
-### 6.4 Instalar en el móvil o tablet
+### 5.4 Instalar en el móvil o tablet
 
 1. Abrir `app-debug.apk` desde el móvil. Android pedirá **permitir instalar apps de esta fuente**: activarlo.
 2. Instalar y abrir la app
@@ -322,7 +320,7 @@ El diálogo de Android solo lista impresoras que tengan un **servicio de impresi
 
 
 
-## 7. Personalizar la etiqueta
+## 6. Personalizar la etiqueta
 
 Todo está en `styles.css`.
 
@@ -347,7 +345,7 @@ Reglas importantes para la impresión:
 
 ---
 
-## 8. Limitaciones conocidas
+## 7. Limitaciones conocidas
 
 - **Órdenes duplicadas.** La búsqueda devuelve la **primera** fila con ese código.
 - **Fechas.** `fecha` y `fechaEntrega` salen con formato ambiguo (`"10/3/23"`). La app no las usa por ahora; habría que corregir su conversión antes de mostrarlas.
@@ -359,7 +357,7 @@ Reglas importantes para la impresión:
 
 ---
 
-## 9. Solución de problemas
+## 8. Solución de problemas
 
 | Síntoma | Causa y solución |
 |---|---|
