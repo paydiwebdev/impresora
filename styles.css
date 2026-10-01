@@ -275,83 +275,7 @@ label {
     gap: 25px;
 }
 
-/* ETIQUETA 10 X 5 CM */
 
-/* .etiqueta-carnet {
-    width: 10cm;
-    height: 5cm;
-    flex: 0 0 auto;
-    box-sizing: border-box;
-    background: white;
-    border: 1px solid #000;
-    padding: 0.25cm;
-    display: flex;
-    flex-direction: column;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #000;
-    overflow: hidden;
-}
-
-.etiqueta-titulo {
-    text-align: left;
-    font-size: 12pt;
-    font-weight: bold;
-    margin-bottom: 0.1cm;
-}
-
-.etiqueta-cliente {
-    text-align: left;
-    font-size: 12pt;
-    font-weight: bold;
-    margin-bottom: 0.05cm;
-}
-
-.etiqueta-publicidad {
-    text-align: left;
-    font-size: 12pt;
-    margin-bottom: 0.05cm;
-}
-
-.etiqueta-datos {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.08cm 0.25cm;
-    flex: 1;
-}
-
-.fila-etiqueta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #aaa;
-    font-size: 8.5pt;
-    gap: 5px;
-}
-
-.fila-etiqueta strong {
-    font-size: 8pt;
-}
-
-.fila-etiqueta span {
-    text-align: right;
-    font-weight: bold;
-}
-
-.etiqueta-caja {
-    margin-top: 0.12cm;
-    padding-top: 0.08cm;
-    border-top: 2px solid #000;
-    text-align: center;
-    font-size: 15pt;
-    font-weight: bold;
-}
-
-.etiqueta-unidades {
-    text-align: center;
-    font-size: 15pt;
-    font-weight: bold;
-    margin-top: 0.05cm;
-} */
 .etiqueta-carnet {
     width: 10cm;
     height: 5cm;
@@ -531,7 +455,7 @@ label {
 
 /* IMPRESIÓN */
 
-@page {
+/* @page {
     size: 100mm 50mm;
     margin: 0;
 }
@@ -599,7 +523,115 @@ label {
         page-break-after: auto;
         break-after: auto;
     }
+} */
+/* IMPRESIÓN */
+
+
+
+/* IMPRESIÓN */
+
+
+
+@page {
+
+    size: 417px 191px;
+    margin: 0;
+
 }
+
+
+
+@media print {
+
+    html,
+
+    body {
+
+        width: fit-content;
+        height: fit-content;
+
+        background: white;
+
+    }
+
+
+
+    body {
+
+        min-height: auto;
+
+
+    }
+
+
+
+    .pantalla {
+
+        display: none !important;
+
+        min-height: 0;
+
+        padding: 0;
+
+    }
+
+
+
+    #pantallaEtiqueta {
+        display: block !important;
+        background: white;
+        padding: 0;
+
+
+    }
+
+
+
+    #pantallaEtiqueta .barra-superior,
+
+    #pantallaEtiqueta .boton-nueva {
+
+        display: none !important;
+
+    }
+
+
+
+    #contenedorEtiqueta {
+        display: block;
+        margin: 0;
+        gap: 0;
+
+    }
+
+
+
+    .etiqueta-carnet {
+
+
+        width: fit-content;          /* fills the paper width, whatever the paper is */
+        height: fit-content;       /* 5 cm minus a hair so it never spills onto a 2nd sheet */
+        margin: 0;
+        border: none;         /* no outer line */
+        overflow: hidden;
+        page-break-after: always;
+        break-after: page;
+
+    }
+
+
+
+    .etiqueta-carnet:last-child {
+
+        page-break-after: auto;
+
+        break-after: auto;
+
+    }
+
+}
+
+
 
 /* TABLET / MÓVIL */
 
